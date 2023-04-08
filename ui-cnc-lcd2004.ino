@@ -8,10 +8,13 @@ AccelStepper stepper_z(1, 4, 7);
 
 #include "Rotary.h"
 
-
 #define clk_pin 14
 #define dt_pin 15
 #define sw_pin 16
+
+#define lw_x 9
+#define lw_y 10
+#define lw_z 11
 
 Rotary r = Rotary(clk_pin, dt_pin);
 
@@ -24,10 +27,15 @@ int nowDt;
 int menuCounter;
 
 int rotaryButtonVal;
-int y_maxspeed = 1000;
-int y_speed = 10000;
-int z_maxspeed = 1000;
-int x_maxspeed = 1000;
+
+int y_maxspeed;
+int y_speed;
+
+int z_maxspeed;
+int z_speed;
+
+int x_maxspeed;
+int x_speed;
 
 bool y_maxspeed_selected = false;
 bool x_maxspeed_selected = false;
@@ -47,6 +55,10 @@ void setup() {
   pinMode(dt_pin, INPUT);
   pinMode(sw_pin, INPUT_PULLUP);
 
+  pinMode(lw_x, INPUT);
+  pinMode(lw_y, INPUT);
+  pinMode(lw_z, INPUT);
+
   lcd.init();
   lcd.backlight();
 
@@ -57,7 +69,12 @@ void setup() {
 
   stepper_y.setSpeed(y_speed);
   stepper_y.setMaxSpeed(y_maxspeed);
-  stepper_y.setAcceleration(5000);
+
+  stepper_x.setMaxSpeed(x_maxspeed);
+  stepper_x.setSpeed(x_speed);
+
+  stepper_z.setMaxSpeed(z_maxspeed);
+  stepper_z.setSpeed(z_speed);
 }
 
 void loop() {
@@ -74,8 +91,29 @@ void loop() {
   }
 
   button_pressed();
+  limitSwitch();
 
   stepper_y.runSpeed();
+  stepper_x.runSpeed();
+  stepper_z.runSpeed();
+
+}
+
+void limitSwitch(){
+
+  if((millis() - lw_intv) > 200){
+    if(digitalRead(lw_x) == 0){
+      stepper_x.stop();
+      lw_intv = millis();
+    }else if(digitalRead(lw_y) == 0){
+      stepper_y.stop();
+      lw_intv = millis();
+    }else if(digitalRead(lw_z) == 0){
+      stepper_z.stop();
+      lw_intv = millis();
+    }
+  }
+
 }
 
 void updateMenu() {
@@ -115,11 +153,13 @@ void rotary_fun() {
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
         x_maxspeed = x_maxspeed + 100;
+        x_speed = x_maxspeed;
       } else {
         if (x_maxspeed < 2) {
           x_maxspeed = 1;
         } else {
           x_maxspeed = x_maxspeed - 100;
+          x_speed = x_maxspeed;
         }
       }
       valChanged = true;
@@ -129,13 +169,13 @@ void rotary_fun() {
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
-        y_maxspeed = y_maxspeed + 1000;
+        y_maxspeed = y_maxspeed + 100;
         y_speed = y_maxspeed;
       } else {
         if (y_maxspeed < 2) {
           y_maxspeed = 1;
         } else {
-          y_maxspeed = y_maxspeed - 1000;
+          y_maxspeed = y_maxspeed - 100;
           y_speed = y_maxspeed;
         }
       }
@@ -146,12 +186,14 @@ void rotary_fun() {
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
-        z_maxspeed = z_maxspeed + 1;
+        z_maxspeed = z_maxspeed + 100;
+        z_speed = z_maxspeed;
       } else {
         if (z_maxspeed < 2) {
           z_maxspeed = 1;
         } else {
-          z_maxspeed = z_maxspeed - 1;
+          z_maxspeed = z_maxspeed - 100;
+          z_speed = z_maxspeed;
         }
       }
       valChanged = true;
@@ -197,29 +239,31 @@ void updateSelect() {
   updateValSel = false;
 }
 
-void updateVal(){
+void updateVal() {
   switch (menuCounter) {
-  case 0:
-    stepper_x.setMaxSpeed(x_maxspeed);
-    lcd.setCursor(4,3);
-    lcd.print(x_maxspeed);
-    break;
-  case 1:
-    stepper_y.setMaxSpeed(y_maxspeed);
-    stepper_y.setSpeed(y_speed);
-    lcd.setCursor(4,3);
-    lcd.print(y_maxspeed);
-    break;
-  case 2:
-    stepper_z.setMaxSpeed(z_maxspeed);
-    lcd.setCursor(4,3);
-    lcd.print(z_maxspeed);
-    break;
+    case 0:
+      stepper_x.setMaxSpeed(x_maxspeed);
+      stepper_x.setSpeed(x_speed);
+      lcd.setCursor(4, 3);
+      lcd.print(x_maxspeed);
+      break;
+    case 1:
+      stepper_y.setMaxSpeed(y_maxspeed);
+      stepper_y.setSpeed(y_speed);
+      lcd.setCursor(4, 3);
+      lcd.print(y_maxspeed);
+      break;
+    case 2:
+      stepper_z.setMaxSpeed(z_maxspeed);
+      stepper_z.setSpeed(z_speed);
+      lcd.setCursor(4, 3);
+      lcd.print(z_maxspeed);
+      break;
   }
   valChanged = false;
 }
 
-void long_button_pressed(int milis){
+void long_button_pressed(int milis) {
   long_button_pressed_timer = millis();
 }
 
@@ -236,7 +280,7 @@ void button_pressed() {
         case 1:
           y_maxspeed_selected = !y_maxspeed_selected;
           updateValSel = true;
-          
+
           break;
         case 2:
           z_maxspeed_selected = !z_maxspeed_selected;
