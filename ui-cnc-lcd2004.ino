@@ -41,6 +41,8 @@ bool y_maxspeed_selected = false;
 bool x_maxspeed_selected = false;
 bool z_maxspeed_selected = false;
 
+unsigned long lw_intv = 0;
+
 bool menuChanged = false;
 bool valChanged = false;
 bool updateValSel = false;
@@ -55,7 +57,9 @@ void setup() {
   pinMode(dt_pin, INPUT);
   pinMode(sw_pin, INPUT_PULLUP);
 
-  pinMode(lw_x, INPUT);
+  pinMode(lw_x, OUTPUT);
+  digitalWrite(lw_x, HIGH); // dummy 5v
+
   pinMode(lw_y, INPUT);
   pinMode(lw_z, INPUT);
 
@@ -75,6 +79,8 @@ void setup() {
 
   stepper_z.setMaxSpeed(z_maxspeed);
   stepper_z.setSpeed(z_speed);
+
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -101,17 +107,24 @@ void loop() {
 
 void limitSwitch(){
 
-  if((millis() - lw_intv) > 200){
-    if(digitalRead(lw_x) == 0){
-      stepper_x.stop();
-      lw_intv = millis();
-    }else if(digitalRead(lw_y) == 0){
+  if((millis() - lw_intv) > 20){
+
+    // if(digitalRead(lw_x) == 0){
+    //   stepper_x.stop();
+    //   Serial.println("X LW TOUCHED");  
+    // }
+    
+    if(digitalRead(lw_y) == 0){
       stepper_y.stop();
-      lw_intv = millis();
-    }else if(digitalRead(lw_z) == 0){
-      stepper_z.stop();
-      lw_intv = millis();
+      Serial.println("Y LW TOUCHED");
     }
+    
+    if(digitalRead(lw_z) == 0){
+      stepper_z.stop();
+      
+    }
+
+    lw_intv = millis();
   }
 
 }
@@ -261,10 +274,6 @@ void updateVal() {
       break;
   }
   valChanged = false;
-}
-
-void long_button_pressed(int milis) {
-  long_button_pressed_timer = millis();
 }
 
 void button_pressed() {
