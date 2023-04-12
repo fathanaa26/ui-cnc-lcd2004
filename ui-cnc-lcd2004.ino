@@ -12,11 +12,11 @@ AccelStepper stepper_z(1, 4, 7);
 #define dt_pin 15
 #define sw_pin 16
 
-#define lw_x 9
-#define lw_y 10
-#define lw_z 11
-
 Rotary r = Rotary(clk_pin, dt_pin);
+
+#include "Button2.h"
+
+Button2 btn;
 
 int lastClk;
 int nowClk;
@@ -25,42 +25,33 @@ int lastDt;
 int nowDt;
 
 int menuCounter;
-
+bool menuChanged = false;
+bool updateSelected = false;
 int rotaryButtonVal;
 
-int y_maxspeed;
+int y_maxspeed = 5000;
 int y_speed;
 
-int z_maxspeed;
+int z_maxspeed = 12000;
 int z_speed;
 
-int x_maxspeed;
+int x_maxspeed = 12000;
 int x_speed;
+
+bool bnfMode = false;
+bool snkMode = false;
 
 bool y_maxspeed_selected = false;
 bool x_maxspeed_selected = false;
 bool z_maxspeed_selected = false;
-bool homepoint_selected = false;
 
-unsigned long lw_intv = 0;
+int a = -10000;
 
-bool menuChanged = false;
-bool valChanged = false;
-bool updateValSel = false;
-
-float RotaryTime1;
-float RotaryTime2;
 
 void setup() {
+
   pinMode(clk_pin, INPUT);
   pinMode(dt_pin, INPUT);
-  pinMode(sw_pin, INPUT_PULLUP);
-
-  pinMode(lw_x, OUTPUT);
-  digitalWrite(lw_x, HIGH);  // dummy 5v
-
-  pinMode(lw_y, INPUT);
-  pinMode(lw_z, INPUT);
 
   lcd.init();
   lcd.backlight();
@@ -68,250 +59,133 @@ void setup() {
   lastClk = digitalRead(clk_pin);
   lastDt = digitalRead(dt_pin);
 
-  r.setChangedHandler(rotary_fun);
-
-
   stepper_y.setMaxSpeed(y_maxspeed);
   stepper_y.setCurrentPosition(0);
 
   stepper_x.setMaxSpeed(x_maxspeed);
   stepper_x.setCurrentPosition(0);
 
-  stepper_z.setMaxSpeed(z_maxspeed);
-  stepper_z.setSpeed(z_speed);
+  r.setChangedHandler(rotary_f);
+  btn.begin(sw_pin,INPUT_PULLUP);
+  btn.setTapHandler(btn_f);
 
-  Serial.begin(9600);
+  x_speed = 1000;
+  y_speed = 1000;
 }
-
-int a = -10000;
 
 void loop() {
   r.loop();
+  btn.loop();
 
-  if (menuChanged == true) {
-    updateMenu();
-  }
-  if (valChanged == true) {
-    updateVal();
-  }
-  if (updateValSel == true) {
-    updateSelect();
+  if(menuChanged == true){
+    lcd_menu_update();
   }
 
-  button_pressed();
-  limitSwitch();
+  if(updateSelected == true){
+    selectedMode();
+  }
 
-  stepper_y.setSpeed(y_speed);
-  stepper_x.setSpeed(x_speed);
+  
 
-  stepper_y.moveTo(a);
+  stepper_y.setSpeed(5000);
+  stepper_y.moveTo(a);  
   stepper_y.runSpeedToPosition();
 
+  stepper_x.setSpeed(12000);
   stepper_x.moveTo(a);
   stepper_x.runSpeedToPosition();
 
   if(stepper_y.currentPosition() && stepper_x.currentPosition() == -10000){
     a = 10000;
-  }
-
-  if(stepper_y.currentPosition() && stepper_x.currentPosition() == 10000){
+  } else if(stepper_y.currentPosition() && stepper_x.currentPosition() == 10000){
     a = -10000;
   }
 
 }
 
-void limitSwitch() {
-
-  if ((millis() - lw_intv) > 20) {
-
-    // if(digitalRead(lw_x) == 0){
-    //   stepper_x.stop();
-    //   Serial.println("X LW TOUCHED");
-    // }
-
-    // if (digitalRead(lw_y) == 0) {
-    //   stepper_z.stop();
-    //   stepper_y.setCurrentPosition(0);
-    // }
-
-    if (digitalRead(lw_z) == 0) {
-      stepper_z.stop();
-    }
-
-    lw_intv = millis();
-  }
-}
-
-void updateMenu() {
-  lcd.clear();
-  switch (menuCounter) {
+void lcd_menu_update(){
+  switch(menuCounter){
     case 0:
-      lcd.setCursor(0, 0);
-      lcd.print("SET MOTOR SPEED");
-      lcd.setCursor(0, 1);
-      lcd.print("X-AXIS");
-
+      lcd.setCursor(0,0);
+      lcd.print("Back n Forth");
+      lcd.setCursor(0,1);
+      lcd.print("Mode");
       break;
-
     case 1:
-      lcd.setCursor(0, 0);
-      lcd.print("SET MOTOR SPEED");
-      lcd.setCursor(0, 1);
-      lcd.print("Y-AXIS");
-
-      break;
-
-    case 2:
-      lcd.setCursor(0, 0);
-      lcd.print("SET MOTOR SPEED");
-      lcd.setCursor(0, 1);
-      lcd.print("Z-AXIS");
-
+      lcd.setCursor(0,0);
+      lcd.print("Snake");
+      lcd.setCursor(0,1);
+      lcd.print("Mode");
       break;
   }
 
   menuChanged = false;
 }
 
-void rotary_fun() {
-  if (x_maxspeed_selected == true) {
+void selectedMode(){
+  if(bnfMode == true){
+    lcd.setCursor(0,3);
+    lcd.print("SELECTED");
+
+  }else if(snkMode == true){
+    lcd.setCursor(0,3);
+    lcd.print("SELECTED 2");
+  }else{
+    lcd.setCursor(0,3);
+    lcd.print("          ");
+  }
+  updateSelected = false;
+}
+
+void rotary_f(){
+
+  if(snkMode == true){
+
+  }else if(bnfMode == true){
+
+  }else{
     nowClk = digitalRead(clk_pin);
+
     if (nowClk != lastClk && nowClk == 1) {
+
       if (digitalRead(dt_pin) != nowClk) {
-        x_maxspeed = x_maxspeed + 100;
-        x_speed = x_maxspeed;
-      } else {
-        if (x_maxspeed < 2) {
-          x_maxspeed = 1;
-        } else {
-          x_maxspeed = x_maxspeed - 100;
-          x_speed = x_maxspeed;
-        }
-      }
-      valChanged = true;
-    }
-    lastClk = nowClk;
-  } else if (y_maxspeed_selected == true) {
-    nowClk = digitalRead(clk_pin);
-    if (nowClk != lastClk && nowClk == 1) {
-      if (digitalRead(dt_pin) != nowClk) {
-        y_maxspeed = y_maxspeed + 100;
-        y_speed = y_maxspeed;
-      } else {
-        if (y_maxspeed < 2) {
-          y_maxspeed = 1;
-        } else {
-          y_maxspeed = y_maxspeed - 100;
-          y_speed = y_maxspeed;
-        }
-      }
-      valChanged = true;
-    }
-    lastClk = nowClk;
-  } else if (z_maxspeed_selected == true) {
-    nowClk = digitalRead(clk_pin);
-    if (nowClk != lastClk && nowClk == 1) {
-      if (digitalRead(dt_pin) != nowClk) {
-        z_maxspeed = z_maxspeed + 100;
-        z_speed = z_maxspeed;
-      } else {
-        if (z_maxspeed < 2) {
-          z_maxspeed = 1;
-        } else {
-          z_maxspeed = z_maxspeed - 100;
-          z_speed = z_maxspeed;
-        }
-      }
-      valChanged = true;
-    }
-    lastClk = nowClk;
-  } else {
-    nowClk = digitalRead(clk_pin);
-    if (nowClk != lastClk && nowClk == 1) {
-      if (digitalRead(dt_pin) != nowClk) {
-        if (menuCounter < 3) {
+        if (menuCounter < 1) {
           menuCounter++;
         } else {
           menuCounter = 0;
         }
         menuChanged = true;
+
       } else {
         if (menuCounter > 0) {
           menuCounter--;
         } else {
-          menuCounter = 3;
+          menuCounter = 1;
         }
         menuChanged = true;
       }
+
     }
+
     lastClk = nowClk;
+
   }
+
 }
 
-void updateSelect() {
-  if (x_maxspeed_selected == true) {
-    lcd.setCursor(3, 3);
-    lcd.print(">");
-  } else if (y_maxspeed_selected == true) {
-    lcd.setCursor(3, 3);
-    lcd.print(">");
-  } else if (z_maxspeed_selected == true) {
-    lcd.setCursor(3, 3);
-    lcd.print(">");
-  } else {
-    lcd.setCursor(3, 3);
-    lcd.print(" ");
-  }
-  updateValSel = false;
-}
+  
 
-void updateVal() {
-  switch (menuCounter) {
+void btn_f(){
+
+  switch(menuCounter){
     case 0:
-      stepper_x.setMaxSpeed(x_maxspeed);
-      lcd.setCursor(4, 3);
-      lcd.print(x_maxspeed);
+      bnfMode = !bnfMode;
+      updateSelected = true;
       break;
     case 1:
-      stepper_y.setMaxSpeed(y_maxspeed);
-      stepper_y.setSpeed(y_speed);
-      lcd.setCursor(4, 3);
-      lcd.print(y_maxspeed);
-      break;
-    case 2:
-      stepper_z.setMaxSpeed(z_maxspeed);
-      stepper_z.setSpeed(z_speed);
-      lcd.setCursor(4, 3);
-      lcd.print(z_maxspeed);
+      snkMode = !snkMode;
+      updateSelected = true;
       break;
   }
-  valChanged = false;
-}
-
-void button_pressed() {
-  if (digitalRead(sw_pin) == 0) {
-    RotaryTime1 = millis();
-    if (RotaryTime1 - RotaryTime2 > 1000) {
-      switch (menuCounter) {
-        case 0:
-          x_maxspeed_selected = !x_maxspeed_selected;
-          updateValSel = true;
-
-          break;
-        case 1:
-          y_maxspeed_selected = !y_maxspeed_selected;
-          updateValSel = true;
-
-          break;
-        case 2:
-          z_maxspeed_selected = !z_maxspeed_selected;
-          updateValSel = true;
-
-          break;
-
-      }
-      RotaryTime2 = millis();
-      menuChanged = true;
-    }
-  }
+  menuChanged = true;
 }
