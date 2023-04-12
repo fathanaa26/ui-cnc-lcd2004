@@ -85,20 +85,36 @@ void loop() {
     selectedMode();
   }
 
-  
+  while(bnfMode){
+    stepper_y.setSpeed(5000);
+    stepper_y.moveTo(a);  
+    stepper_y.runSpeedToPosition();
 
-  stepper_y.setSpeed(5000);
-  stepper_y.moveTo(a);  
-  stepper_y.runSpeedToPosition();
+    stepper_x.setSpeed(12000);
+    stepper_x.moveTo(a);
+    stepper_x.runSpeedToPosition();
 
-  stepper_x.setSpeed(12000);
-  stepper_x.moveTo(a);
-  stepper_x.runSpeedToPosition();
+    if(stepper_y.currentPosition() && stepper_x.currentPosition() == -10000){
+      a = 10000;
+    } else if(stepper_y.currentPosition() && stepper_x.currentPosition() == 10000){
+      a = -10000;
+    }    
+  }
 
-  if(stepper_y.currentPosition() && stepper_x.currentPosition() == -10000){
-    a = 10000;
-  } else if(stepper_y.currentPosition() && stepper_x.currentPosition() == 10000){
-    a = -10000;
+  while(snkMode){
+    stepper_y.setSpeed(1000);
+    stepper_y.moveTo(a);  
+    stepper_y.runSpeedToPosition();
+
+    stepper_x.setSpeed(1000);
+    stepper_x.moveTo(a);
+    stepper_x.runSpeedToPosition();
+
+    if(stepper_y.currentPosition() && stepper_x.currentPosition() == -10000){
+      a = 10000;
+    } else if(stepper_y.currentPosition() && stepper_x.currentPosition() == 10000){
+      a = -10000;
+    }
   }
 
 }
@@ -111,6 +127,7 @@ void lcd_menu_update(){
       lcd.setCursor(0,1);
       lcd.print("Mode");
       break;
+
     case 1:
       lcd.setCursor(0,0);
       lcd.print("Snake");
@@ -173,7 +190,6 @@ void rotary_f(){
 
 }
 
-  
 
 void btn_f(){
 
@@ -182,10 +198,12 @@ void btn_f(){
       bnfMode = !bnfMode;
       updateSelected = true;
       break;
+
     case 1:
       snkMode = !snkMode;
       updateSelected = true;
       break;
   }
+
   menuChanged = true;
 }
