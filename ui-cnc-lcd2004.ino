@@ -40,6 +40,7 @@ int x_speed;
 bool y_maxspeed_selected = false;
 bool x_maxspeed_selected = false;
 bool z_maxspeed_selected = false;
+bool homepoint_selected = false;
 
 unsigned long lw_intv = 0;
 
@@ -50,15 +51,13 @@ bool updateValSel = false;
 float RotaryTime1;
 float RotaryTime2;
 
-int long_button_pressed_timer;
-
 void setup() {
   pinMode(clk_pin, INPUT);
   pinMode(dt_pin, INPUT);
   pinMode(sw_pin, INPUT_PULLUP);
 
   pinMode(lw_x, OUTPUT);
-  digitalWrite(lw_x, HIGH); // dummy 5v
+  digitalWrite(lw_x, HIGH);  // dummy 5v
 
   pinMode(lw_y, INPUT);
   pinMode(lw_z, INPUT);
@@ -71,17 +70,20 @@ void setup() {
 
   r.setChangedHandler(rotary_fun);
 
-  stepper_y.setSpeed(y_speed);
+
   stepper_y.setMaxSpeed(y_maxspeed);
+  stepper_y.setCurrentPosition(0);
 
   stepper_x.setMaxSpeed(x_maxspeed);
-  stepper_x.setSpeed(x_speed);
+  stepper_x.setCurrentPosition(0);
 
   stepper_z.setMaxSpeed(z_maxspeed);
   stepper_z.setSpeed(z_speed);
 
   Serial.begin(9600);
 }
+
+int a = -10000;
 
 void loop() {
   r.loop();
@@ -99,34 +101,45 @@ void loop() {
   button_pressed();
   limitSwitch();
 
-  stepper_y.runSpeed();
-  stepper_x.runSpeed();
-  stepper_z.runSpeed();
+  stepper_y.setSpeed(y_speed);
+  stepper_x.setSpeed(x_speed);
+
+  stepper_y.moveTo(a);
+  stepper_y.runSpeedToPosition();
+
+  stepper_x.moveTo(a);
+  stepper_x.runSpeedToPosition();
+
+  if(stepper_y.currentPosition() && stepper_x.currentPosition() == -10000){
+    a = 10000;
+  }
+
+  if(stepper_y.currentPosition() && stepper_x.currentPosition() == 10000){
+    a = -10000;
+  }
 
 }
 
-void limitSwitch(){
+void limitSwitch() {
 
-  if((millis() - lw_intv) > 20){
+  if ((millis() - lw_intv) > 20) {
 
     // if(digitalRead(lw_x) == 0){
     //   stepper_x.stop();
-    //   Serial.println("X LW TOUCHED");  
+    //   Serial.println("X LW TOUCHED");
     // }
-    
-    if(digitalRead(lw_y) == 0){
-      stepper_y.stop();
-      Serial.println("Y LW TOUCHED");
-    }
-    
-    if(digitalRead(lw_z) == 0){
+
+    // if (digitalRead(lw_y) == 0) {
+    //   stepper_z.stop();
+    //   stepper_y.setCurrentPosition(0);
+    // }
+
+    if (digitalRead(lw_z) == 0) {
       stepper_z.stop();
-      
     }
 
     lw_intv = millis();
   }
-
 }
 
 void updateMenu() {
@@ -256,7 +269,6 @@ void updateVal() {
   switch (menuCounter) {
     case 0:
       stepper_x.setMaxSpeed(x_maxspeed);
-      stepper_x.setSpeed(x_speed);
       lcd.setCursor(4, 3);
       lcd.print(x_maxspeed);
       break;
@@ -296,6 +308,7 @@ void button_pressed() {
           updateValSel = true;
 
           break;
+
       }
       RotaryTime2 = millis();
       menuChanged = true;
