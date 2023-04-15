@@ -14,5 +14,19 @@ void btn_isr(){
       z_maxspeed_selected = !z_maxspeed_selected;
       isSpeedUpdated = true;
       break;
+
+    case 3:
+      mode_state = true;
+      break;
+    
+    case 4:
+      bnfMode_selected = !bnfMode_selected;
+      mode_updated = true;
+      break;
+    
+    case 5:
+      sMode_selected = !sMode_selected;
+      mode_updated = true;
+      break;
   }
 }

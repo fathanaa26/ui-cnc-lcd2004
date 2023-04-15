@@ -1,6 +1,6 @@
-void r_isr(){
+void r_isr() {
 
-  if(x_maxspeed_selected == true){
+  if (x_maxspeed_selected == true) {
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
@@ -18,7 +18,7 @@ void r_isr(){
     }
     lastClk = nowClk;
 
-  }else if(y_maxspeed_selected == true){
+  } else if (y_maxspeed_selected == true) {
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
@@ -36,7 +36,7 @@ void r_isr(){
     }
     lastClk = nowClk;
 
-  }else if(z_maxspeed_selected == true){
+  } else if (z_maxspeed_selected == true) {
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
@@ -53,8 +53,29 @@ void r_isr(){
       speed_val_change = true;
     }
     lastClk = nowClk;
-    
-  }else{
+
+  } else if (mode_state == true) {
+    nowClk = digitalRead(clk_pin);
+    if (nowClk != lastClk && nowClk == 1) {
+      if (digitalRead(dt_pin) != nowClk) {
+        if (cursor < 5) {
+          cursor++;
+        } else {
+          cursor = 4;
+        }
+        menu_mode_change = true;
+      } else {
+        if (cursor > 4) {
+          cursor--;
+        } else {
+          cursor = 5;
+        }
+        menu_mode_change = true;
+      }
+    }
+    lastClk = nowClk;
+
+  } else {
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {

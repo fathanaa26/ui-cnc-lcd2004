@@ -41,3 +41,10 @@ int x_speed ;
 bool y_maxspeed_selected = false;
 bool x_maxspeed_selected = false;
 bool z_maxspeed_selected = false;
+
+bool mode_state = false;
+bool menu_mode_change = false;
+
+bool mode_updated = false;
+bool bnfMode_selected = false;
+bool sMode_selected = false;
