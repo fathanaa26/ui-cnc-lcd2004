@@ -64,6 +64,7 @@ void r_isr() {
           cursor = 4;
         }
         menu_mode_change = true;
+        mode_updated = true;
       } else {
         if (cursor > 4) {
           cursor--;
@@ -71,6 +72,7 @@ void r_isr() {
           cursor = 5;
         }
         menu_mode_change = true;
+        mode_updated = true;
       }
     }
     lastClk = nowClk;
