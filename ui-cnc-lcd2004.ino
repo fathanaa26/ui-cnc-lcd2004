@@ -216,7 +216,7 @@ void rotary_f() {
     if (nowClk != lastClk && nowClk == 1) {
 
       if (digitalRead(dt_pin) != nowClk) {
-        if (menuCounter < 5) {
+        if (menuCounter < 1) {
           menuCounter++;
         } else {
           menuCounter = 0;
@@ -229,7 +229,7 @@ void rotary_f() {
         if (menuCounter > 0) {
           menuCounter--;
         } else {
-          menuCounter = 5;
+          menuCounter = 1;
         }
         menuChanged = true;
         lcd.setCursor(0,0);
@@ -246,7 +246,7 @@ void rotary_f() {
     if (nowClk != lastClk && nowClk == 1) {
 
       if (digitalRead(dt_pin) != nowClk) {
-        if (menuCounter < 5) {
+        if (menuCounter < 1) {
           menuCounter++;
         } else {
           menuCounter = 0;
@@ -257,7 +257,7 @@ void rotary_f() {
         if (menuCounter > 0) {
           menuCounter--;
         } else {
-          menuCounter = 5;
+          menuCounter = 1;
         }
         menuChanged = true;
       }
@@ -328,12 +328,12 @@ void rotary_f() {
         if (menuCounter < 5) {
           menuCounter++;
         } else {
-          menuCounter = 0;
+          menuCounter = 2;
         }
         menuChanged = true;
 
       } else {
-        if (menuCounter > 0) {
+        if (menuCounter > 2) {
           menuCounter--;
         } else {
           menuCounter = 5;
