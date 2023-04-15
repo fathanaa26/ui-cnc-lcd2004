@@ -28,5 +28,9 @@ void btn_isr(){
       sMode_selected = !sMode_selected;
       mode_updated = true;
       break;
+
+    case 6:
+      mode_state = false;
+      break;  
   }
 }

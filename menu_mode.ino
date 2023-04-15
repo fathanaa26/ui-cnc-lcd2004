@@ -35,6 +35,21 @@ void menu_mode(){
       lcd.setCursor(2,1);
       lcd.print("Mode");
       break;
+
+    case 6:
+      lcd.setCursor(0,0);
+      lcd.print("              ");
+      lcd.setCursor(0,1);
+      lcd.print("              ");
+      lcd.setCursor(0,2);
+      lcd.print("              ");
+      lcd.setCursor(0,3);
+      lcd.print("              ");
+
+      lcd.setCursor(0,0);
+      lcd.print("[ BACK ]");      
+      break;
+      
   }
   menu_mode_change = false;
 }

@@ -58,7 +58,7 @@ void r_isr() {
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
-        if (cursor < 5) {
+        if (cursor < 6) {
           cursor++;
         } else {
           cursor = 4;
@@ -69,7 +69,7 @@ void r_isr() {
         if (cursor > 4) {
           cursor--;
         } else {
-          cursor = 5;
+          cursor = 6;
         }
         menu_mode_change = true;
         mode_updated = true;
