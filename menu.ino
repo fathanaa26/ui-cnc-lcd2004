@@ -5,13 +5,13 @@ void menu() {
       lcd.print("SET SPEED X");
 
       lcd.setCursor(0, 1);
-      lcd.print("        ");
+      lcd.print("             ");
 
       lcd.setCursor(0, 2);
-      lcd.print("        ");
+      lcd.print("             ");
 
       lcd.setCursor(0, 3);
-      lcd.print("        ");
+      lcd.print("             ");
       break;
 
     case 1:
@@ -19,27 +19,26 @@ void menu() {
       lcd.print("SET SPEED Y");
 
       lcd.setCursor(0, 1);
-      lcd.print("        ");
+      lcd.print("             ");
 
       lcd.setCursor(0, 2);
-      lcd.print("        ");
+      lcd.print("             ");
 
       lcd.setCursor(0, 3);
-      lcd.print("        ");
-      break;
+      lcd.print("             ");
 
     case 2:
       lcd.setCursor(0, 0);
       lcd.print("SET SPEED Z");
 
       lcd.setCursor(0, 1);
-      lcd.print("        ");
+      lcd.print("             ");
 
       lcd.setCursor(0, 2);
-      lcd.print("        ");
+      lcd.print("             ");
 
       lcd.setCursor(0, 3);
-      lcd.print("        ");
+      lcd.print("             ");
 
       break;
 
@@ -48,14 +47,14 @@ void menu() {
       lcd.print("[ CONFIRM ]");
 
       lcd.setCursor(0, 1);
-      lcd.print("X : ");
-      lcd.print(x_speed);
+      lcd.print("X : Level ");
+      lcd.print(x_maxspeed);
       lcd.setCursor(0, 2);
-      lcd.print("Y : ");
-      lcd.print(y_speed);
+      lcd.print("Y : Level ");
+      lcd.print(y_maxspeed);
       lcd.setCursor(0, 3);
-      lcd.print("Z : ");
-      lcd.print(z_speed);
+      lcd.print("Z : Level ");
+      lcd.print(z_maxspeed);
 
       break;
   }

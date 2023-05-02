@@ -4,13 +4,13 @@ void r_isr() {
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
-        x_maxspeed = x_maxspeed + 1000;
+        x_maxspeed = x_maxspeed + 1;
         x_speed = x_maxspeed;
       } else {
-        if (x_maxspeed < 1000) {
-          x_maxspeed = 1000;
+        if (x_maxspeed < 1) {
+          x_maxspeed = 1;
         } else {
-          x_maxspeed = x_maxspeed - 1000;
+          x_maxspeed = x_maxspeed - 1;
           x_speed = x_maxspeed;
         }
       }
@@ -22,13 +22,13 @@ void r_isr() {
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
-        y_maxspeed = y_maxspeed + 1000;
+        y_maxspeed = y_maxspeed + 1;
         y_speed = y_maxspeed;
       } else {
-        if (y_maxspeed < 1000) {
-          y_maxspeed = 1000;
+        if (y_maxspeed < 1) {
+          y_maxspeed = 1;
         } else {
-          y_maxspeed = y_maxspeed - 1000;
+          y_maxspeed = y_maxspeed - 1;
           y_speed = y_maxspeed;
         }
       }
@@ -40,13 +40,13 @@ void r_isr() {
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
-        z_maxspeed = z_maxspeed + 1000;
+        z_maxspeed = z_maxspeed + 1;
         z_speed = z_maxspeed;
       } else {
-        if (z_maxspeed < 1000) {
-          z_maxspeed = 1000;
+        if (z_maxspeed < 1) {
+          z_maxspeed = 1;
         } else {
-          z_maxspeed = z_maxspeed - 1000;
+          z_maxspeed = z_maxspeed - 1;
           z_speed = z_maxspeed;
         }
       }

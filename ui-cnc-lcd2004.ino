@@ -26,6 +26,13 @@ void setup() {
   btn.begin(sw_pin, INPUT_PULLUP);
   btn.setTapHandler(btn_isr);
 
+  // EEPROM.read(0) = x_maxspeed;
+  // EEPROM.read(1) = y_maxspeed;
+  // EEPROM.read(2) = z_maxspeed;
+
+  // Timer1.initialize(10000);
+  // Timer1.attachInterrupt(r_isr);
+
 }
 
 int a = -10000;
@@ -59,18 +66,14 @@ void loop() {
     
   }
 
-  stepper_x.setMaxSpeed(x_maxspeed);
-  stepper_x.setSpeed(x_speed);
+  stepper_x.setMaxSpeed(levelSpeed[x_maxspeed]);
+  stepper_x.setSpeed(levelSpeed[x_maxspeed]);
 
-  stepper_y.setMaxSpeed(y_maxspeed);
-  stepper_y.setSpeed(y_speed);
+  stepper_y.setMaxSpeed(levelSpeed[y_maxspeed]);
+  stepper_y.setSpeed(levelSpeed[y_maxspeed]);
 
-  stepper_z.setMaxSpeed(y_maxspeed);
-  stepper_z.setSpeed(y_speed);
-
-  EEPROM.update(0, x_maxspeed);
-  EEPROM.update(1, y_maxspeed);
-  EEPROM.update(2, z_maxspeed);
+  stepper_z.setMaxSpeed(levelSpeed[z_maxspeed]);
+  stepper_z.setSpeed(levelSpeed[z_maxspeed]);
 
   if(bnfMode_selected == true){
     stepper_y.moveTo(a);

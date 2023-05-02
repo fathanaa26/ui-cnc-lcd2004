@@ -23,6 +23,8 @@ Button2 btn;
 int levelSpeed[] = {1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000,12000};
 int levelSpeed_len = 12;
 
+#include <TimerOne.h>
+
 #define ls_x_pin 9
 #define ls_y_pin 10
 #define ls_z_pin 11
