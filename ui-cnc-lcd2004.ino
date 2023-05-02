@@ -2,9 +2,15 @@
 #include "header.h"
 
 void setup() {
-
+  Serial.begin(9600);
   pinMode(clk_pin, INPUT);
   pinMode(dt_pin, INPUT);
+
+  pinMode(ls_x_pin, INPUT);
+  pinMode(ls_y_pin, INPUT);
+  pinMode(ls_z_pin, INPUT);
+
+  digitalWrite(ls_y_pin, HIGH);
 
   lcd.init();
   lcd.backlight();
@@ -12,15 +18,21 @@ void setup() {
   lastClk = digitalRead(clk_pin);
   lastDt = digitalRead(dt_pin);
 
+  last_x_ls = digitalRead(ls_x_pin);
+  last_y_ls = digitalRead(ls_y_pin);
+  last_z_ls = digitalRead(ls_z_pin);
+
   r.setChangedHandler(r_isr);
   btn.begin(sw_pin, INPUT_PULLUP);
   btn.setTapHandler(btn_isr);
+
 }
 
 int a = -10000;
 int b = -20000;
 
 void loop() {
+
   r.loop();
   btn.loop();
 
@@ -31,6 +43,7 @@ void loop() {
   if (isSpeedUpdated == true) {
     axis_selection();
   }
+
   if (speed_val_change == true) {
     speed_change();
   }
@@ -43,6 +56,7 @@ void loop() {
     if(mode_updated == true){
       mode_changed();
     }
+    
   }
 
   stepper_x.setMaxSpeed(x_maxspeed);
@@ -50,6 +64,13 @@ void loop() {
 
   stepper_y.setMaxSpeed(y_maxspeed);
   stepper_y.setSpeed(y_speed);
+
+  stepper_z.setMaxSpeed(y_maxspeed);
+  stepper_z.setSpeed(y_speed);
+
+  EEPROM.update(0, x_maxspeed);
+  EEPROM.update(1, y_maxspeed);
+  EEPROM.update(2, z_maxspeed);
 
   if(bnfMode_selected == true){
     stepper_y.moveTo(a);
@@ -76,6 +97,30 @@ void loop() {
       b = 20000;
     } else if (stepper_y.currentPosition() && stepper_x.currentPosition() == 20000) {
       b = -20000;
+    }
+  }
+
+  if(autohoming_state == true){
+    stepper_y.moveTo(b);
+    stepper_y.runSpeedToPosition();
+
+    stepper_x.moveTo(b);
+    stepper_x.runSpeedToPosition();
+
+    stepper_z.moveTo(b);
+    stepper_z.runSpeedToPosition();
+
+    if(digitalRead(ls_x_pin) != last_x_ls){
+      stepper_x.stop();
+      stepper_x.setCurrentPosition(0);
+    }
+    if(digitalRead(ls_y_pin) != last_y_ls){
+      stepper_y.stop();
+      stepper_y.setCurrentPosition(0);
+    }
+    if(digitalRead(ls_z_pin) != last_z_ls){
+      stepper_z.stop();
+      stepper_z.setCurrentPosition(0);
     }
   }
 

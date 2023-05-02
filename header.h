@@ -18,6 +18,12 @@ Rotary r = Rotary(clk_pin, dt_pin);
 
 Button2 btn;
 
+#include <EEPROM.h>
+
+#define ls_x_pin 9
+#define ls_y_pin 10
+#define ls_z_pin 11
+
 int lastClk;
 int nowClk;
 
@@ -48,3 +54,9 @@ bool menu_mode_change = false;
 bool mode_updated = false;
 bool bnfMode_selected = false;
 bool sMode_selected = false;
+
+int last_x_ls;
+int last_y_ls;
+int last_z_ls;
+
+bool autohoming_state=false;

@@ -58,7 +58,7 @@ void r_isr() {
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
-        if (cursor < 6) {
+        if (cursor < 7) {
           cursor++;
         } else {
           cursor = 4;
@@ -69,7 +69,7 @@ void r_isr() {
         if (cursor > 4) {
           cursor--;
         } else {
-          cursor = 6;
+          cursor = 7;
         }
         menu_mode_change = true;
         mode_updated = true;
@@ -77,11 +77,34 @@ void r_isr() {
     }
     lastClk = nowClk;
 
-  } else {
+  } else if(bnfMode_selected == true || sMode_selected == true || autohoming_state == true){
     nowClk = digitalRead(clk_pin);
     if (nowClk != lastClk && nowClk == 1) {
       if (digitalRead(dt_pin) != nowClk) {
-        if (cursor < 3) {
+        if (cursor < 1) {
+          cursor++;
+        } else {
+          cursor = 1;
+        }
+        menu_mode_change = true;
+        mode_updated = true;
+      } else {
+        if (cursor > 1) {
+          cursor--;
+        } else {
+          cursor = 1;
+        }
+        menu_mode_change = true;
+        mode_updated = true;
+      }
+    }
+    lastClk = nowClk;
+
+  }else {
+    nowClk = digitalRead(clk_pin);
+    if (nowClk != lastClk && nowClk == 1) {
+      if (digitalRead(dt_pin) != nowClk) {
+        if (cursor < 4) {
           cursor++;
         } else {
           cursor = 0;
@@ -91,7 +114,7 @@ void r_isr() {
         if (cursor > 0) {
           cursor--;
         } else {
-          cursor = 3;
+          cursor = 4;
         }
         menu_change = true;
       }

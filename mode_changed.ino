@@ -9,7 +9,12 @@ void mode_changed(){
     lcd.print("[2]");
     lcd.setCursor(3,3);
     lcd.print("MODE SELECTED");
-  }else{
+  }else if(autohoming_state == true){
+    lcd.setCursor(0,3);
+    lcd.print("[3]");
+    lcd.setCursor(3,3);
+    lcd.print("PLEASE WAIT");
+  } else{
     lcd.setCursor(0,3);
     lcd.print("                  ");
   }

@@ -31,6 +31,11 @@ void btn_isr(){
 
     case 6:
       mode_state = false;
-      break;  
+      break; 
+
+    case 7:
+      autohoming_state = !autohoming_state;
+      mode_updated = true;
+      break; 
   }
 }
