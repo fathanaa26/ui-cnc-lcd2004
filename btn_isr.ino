@@ -17,6 +17,7 @@ void btn_isr(){
 
     case 3:
       mode_state = true;
+      update_eeprom_state = true;
       break;
     
     case 4:

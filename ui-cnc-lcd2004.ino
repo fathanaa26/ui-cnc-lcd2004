@@ -26,12 +26,12 @@ void setup() {
   btn.begin(sw_pin, INPUT_PULLUP);
   btn.setTapHandler(btn_isr);
 
-  // EEPROM.read(0) = x_maxspeed;
-  // EEPROM.read(1) = y_maxspeed;
-  // EEPROM.read(2) = z_maxspeed;
+  EEPROM.read(0) = x_maxspeed;
+  EEPROM.read(1) = y_maxspeed;
+  EEPROM.read(2) = z_maxspeed;
 
-  // Timer1.initialize(10000);
-  // Timer1.attachInterrupt(r_isr);
+  Timer1.initialize(10000);
+  Timer1.attachInterrupt(r_isr);
 
 }
 

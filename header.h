@@ -65,3 +65,4 @@ int last_y_ls;
 int last_z_ls;
 
 bool autohoming_state=false;
+bool update_eeprom_state=false;
